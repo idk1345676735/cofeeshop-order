@@ -1,3 +1,29 @@
+const adminToken =
+  localStorage.getItem('adminToken');
+
+if (!adminToken) {
+  window.location.href =
+    '/login.html';
+}
+
+
+function handleUnauthorized(response) {
+
+  if (response.status !== 401) {
+    return false;
+  }
+
+  localStorage.removeItem(
+    'adminToken'
+  );
+
+  window.location.href =
+    '/login.html';
+
+  return true;
+}
+
+
 let adminProducts = [];
 let adminCategories = [];
 let orders = [];
@@ -43,9 +69,36 @@ async function loadAdminData() {
       productsResponse,
       categoriesResponse
     ] = await Promise.all([
-      fetch('/api/products'),
+
+      fetch(
+        '/api/products',
+        {
+          headers: {
+            Authorization:
+              `Bearer ${adminToken}`
+          }
+        }
+      ),
+
       fetch('/api/categories')
     ]);
+
+
+    if (
+      handleUnauthorized(
+        productsResponse
+      )
+    ) {
+      return;
+    }
+
+
+    if (
+      !productsResponse.ok ||
+      !categoriesResponse.ok
+    ) {
+      throw new Error();
+    }
 
 
     adminProducts =
@@ -57,6 +110,7 @@ async function loadAdminData() {
 
     renderAdminProducts();
     renderCategoryOptions();
+
 
   } catch (error) {
 
@@ -186,7 +240,8 @@ function openProductModal(
 
     document.getElementById(
       'productModalTitle'
-    ).textContent = 'Редагування товару';
+    ).textContent =
+      'Редагування товару';
 
 
     document.getElementById(
@@ -201,7 +256,8 @@ function openProductModal(
 
     document.getElementById(
       'productCategory'
-    ).value = product.category_id;
+    ).value =
+      product.category_id;
 
 
     document.getElementById(
@@ -224,7 +280,8 @@ function openProductModal(
 
     document.getElementById(
       'productModalTitle'
-    ).textContent = 'Новий товар';
+    ).textContent =
+      'Новий товар';
 
 
     document.getElementById(
@@ -248,7 +305,9 @@ function closeProductModal() {
 
 
 document
-  .getElementById('newProductButton')
+  .getElementById(
+    'newProductButton'
+  )
   .addEventListener(
     'click',
     () => openProductModal()
@@ -256,7 +315,9 @@ document
 
 
 document
-  .getElementById('closeProductModal')
+  .getElementById(
+    'closeProductModal'
+  )
   .addEventListener(
     'click',
     closeProductModal
@@ -306,7 +367,6 @@ productForm.addEventListener(
         document.getElementById(
           'productImage'
         ).value.trim()
-
     };
 
 
@@ -323,13 +383,23 @@ productForm.addEventListener(
 
             headers: {
               'Content-Type':
-                'application/json'
+                'application/json',
+
+              Authorization:
+                `Bearer ${adminToken}`
             },
 
             body:
               JSON.stringify(product)
           }
         );
+
+
+      if (
+        handleUnauthorized(response)
+      ) {
+        return;
+      }
 
 
       const result =
@@ -358,7 +428,6 @@ productForm.addEventListener(
       productMessage.className =
         'state-message error';
     }
-
   }
 );
 
@@ -379,9 +448,21 @@ async function deleteProduct(product) {
       await fetch(
         `/api/products/${product.id}`,
         {
-          method: 'DELETE'
+          method: 'DELETE',
+
+          headers: {
+            Authorization:
+              `Bearer ${adminToken}`
+          }
         }
       );
+
+
+    if (
+      handleUnauthorized(response)
+    ) {
+      return;
+    }
 
 
     const result =
@@ -389,6 +470,7 @@ async function deleteProduct(product) {
 
 
     if (!response.ok) {
+
       throw new Error(
         result.message
       );
@@ -417,7 +499,22 @@ async function loadOrders() {
   try {
 
     const response =
-      await fetch('/api/orders');
+      await fetch(
+        '/api/orders',
+        {
+          headers: {
+            Authorization:
+              `Bearer ${adminToken}`
+          }
+        }
+      );
+
+
+    if (
+      handleUnauthorized(response)
+    ) {
+      return;
+    }
 
 
     if (!response.ok) {
@@ -469,15 +566,19 @@ function renderOrders() {
   orders.forEach(order => {
 
     const card =
-      document.createElement('article');
+      document.createElement(
+        'article'
+      );
 
-    card.className = 'order-card';
+    card.className =
+      'order-card';
 
 
     const itemsMarkup =
       order.items
         .map(item => `
           <li>
+
             <span>
               ${item.product_name}
               × ${item.quantity}
@@ -489,6 +590,7 @@ function renderOrders() {
                 item.quantity
               )} грн
             </strong>
+
           </li>
         `)
         .join('');
@@ -499,6 +601,7 @@ function renderOrders() {
       <div class="order-header">
 
         <div>
+
           <span class="eyebrow">
             Замовлення
           </span>
@@ -506,6 +609,7 @@ function renderOrders() {
           <h3>
             №${order.id}
           </h3>
+
         </div>
 
         <strong class="order-total">
@@ -541,13 +645,17 @@ function renderOrders() {
     `;
 
 
-    ordersContainer.appendChild(card);
+    ordersContainer.appendChild(
+      card
+    );
   });
 }
 
 
 document
-  .querySelectorAll('.admin-tab')
+  .querySelectorAll(
+    '.admin-tab'
+  )
   .forEach(button => {
 
     button.addEventListener(
@@ -597,10 +705,8 @@ document
         if (tab === 'orders') {
           loadOrders();
         }
-
       }
     );
-
   });
 
 
@@ -609,6 +715,50 @@ function formatPrice(value) {
   return Number(value)
     .toFixed(2)
     .replace('.00', '');
+}
+
+
+const logoutButton =
+  document.getElementById(
+    'logoutButton'
+  );
+
+
+if (logoutButton) {
+
+  logoutButton.addEventListener(
+    'click',
+    async () => {
+
+      try {
+
+        await fetch(
+          '/api/admin/logout',
+          {
+            method: 'POST',
+
+            headers: {
+              Authorization:
+                `Bearer ${adminToken}`
+            }
+          }
+        );
+
+      } catch (error) {
+
+        console.error(error);
+
+      } finally {
+
+        localStorage.removeItem(
+          'adminToken'
+        );
+
+        window.location.href =
+          '/login.html';
+      }
+    }
+  );
 }
 
 

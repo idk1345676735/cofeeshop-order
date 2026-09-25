@@ -10,35 +10,35 @@ const {
 const validateProduct =
   require('../middleware/productValidation');
 
-const productRouter =
-  express.Router();
+const {
+  requireAdmin
+} = require('../middleware/adminAuth');
 
+const router = express.Router();
 
-productRouter.get(
+router.get(
   '/',
   getProducts
 );
 
-
-productRouter.post(
+router.post(
   '/',
+  requireAdmin,
   validateProduct,
   createProduct
 );
 
-
-productRouter.put(
+router.put(
   '/:id',
+  requireAdmin,
   validateProduct,
   updateProduct
 );
 
-
-productRouter.delete(
+router.delete(
   '/:id',
+  requireAdmin,
   deleteProduct
 );
 
-
-module.exports =
-  productRouter;
+module.exports = router;
