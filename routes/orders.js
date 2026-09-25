@@ -5,9 +5,21 @@ const {
   getOrders
 } = require('../controllers/ordersController');
 
+const {
+  requireAdmin
+} = require('../middleware/adminAuth');
+
 const router = express.Router();
 
-router.get('/', getOrders);
-router.post('/', createOrder);
+router.get(
+  '/',
+  requireAdmin,
+  getOrders
+);
+
+router.post(
+  '/',
+  createOrder
+);
 
 module.exports = router;

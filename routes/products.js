@@ -7,26 +7,37 @@ const {
   deleteProduct
 } = require('../controllers/productsController');
 
-const validateProduct = require('../middleware/productValidation');
+const validateProduct =
+  require('../middleware/productValidation');
+
+const {
+  requireAdmin
+} = require('../middleware/adminAuth');
 
 const router = express.Router();
 
-router.get('/', getProducts);
+router.get(
+  '/',
+  getProducts
+);
 
 router.post(
   '/',
+  requireAdmin,
   validateProduct,
   createProduct
 );
 
 router.put(
   '/:id',
+  requireAdmin,
   validateProduct,
   updateProduct
 );
 
 router.delete(
   '/:id',
+  requireAdmin,
   deleteProduct
 );
 
