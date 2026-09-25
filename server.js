@@ -13,6 +13,8 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
+app.use(express.static('public'));
+
 app.use('/api/categories', categoriesRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/orders', ordersRouter);

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Адмін-панель | Coffee Shop</title>
+
+  <link
+    rel="stylesheet"
+    href="styles.css"
+  >
+</head>
+
+<body class="admin-body">
+
+<header class="header">
+
+  <div>
+    <span class="eyebrow">Coffee Shop</span>
+    <h1>Адмін-панель</h1>
+  </div>
+
+  <a
+    href="/"
+    class="secondary-button"
+  >
+    До меню
+  </a>
+
+</header>
+
+
+<main class="container admin-container">
+
+  <div class="admin-tabs">
+
+    <button
+      class="admin-tab active"
+      data-tab="products"
+    >
+      Товари
+    </button>
+
+    <button
+      class="admin-tab"
+      data-tab="orders"
+    >
+      Замовлення
+    </button>
+
+  </div>
+
+
+  <section
+    id="productsTab"
+    class="admin-section"
+  >
+
+    <div class="section-heading">
+
+      <div>
+        <span class="eyebrow">
+          Керування меню
+        </span>
+
+        <h2>Товари</h2>
+      </div>
+
+      <button
+        id="newProductButton"
+        class="primary-button"
+      >
+        + Додати товар
+      </button>
+
+    </div>
+
+
+    <div
+      id="adminProductsLoading"
+      class="state-message"
+    >
+      Завантаження...
+    </div>
+
+
+    <div
+      id="adminProducts"
+      class="admin-products"
+    ></div>
+
+  </section>
+
+
+  <section
+    id="ordersTab"
+    class="admin-section hidden"
+  >
+
+    <div class="section-heading">
+
+      <div>
+        <span class="eyebrow">
+          Отримані замовлення
+        </span>
+
+        <h2>Замовлення</h2>
+      </div>
+
+    </div>
+
+    <div
+      id="ordersLoading"
+      class="state-message"
+    >
+      Завантаження...
+    </div>
+
+    <div id="orders" class="orders"></div>
+
+  </section>
+
+</main>
+
+
+<div
+  id="productModal"
+  class="modal hidden"
+>
+
+  <div class="modal-card">
+
+    <div class="modal-header">
+
+      <h2 id="productModalTitle">
+        Новий товар
+      </h2>
+
+      <button
+        id="closeProductModal"
+        class="icon-button"
+        type="button"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form id="productForm">
+
+      <input
+        type="hidden"
+        id="productId"
+      >
+
+
+      <label>
+        Назва
+
+        <input
+          id="productName"
+          type="text"
+          required
+        >
+      </label>
+
+
+      <label>
+        Категорія
+
+        <select
+          id="productCategory"
+          required
+        ></select>
+      </label>
+
+
+      <label>
+        Опис
+
+        <textarea
+          id="productDescription"
+          rows="3"
+        ></textarea>
+      </label>
+
+
+      <label>
+        Ціна, грн
+
+        <input
+          id="productPrice"
+          type="number"
+          min="1"
+          step="0.01"
+          required
+        >
+      </label>
+
+
+      <label>
+        Шлях до зображення
+
+        <input
+          id="productImage"
+          type="text"
+          placeholder="images/latte.jpg"
+        >
+      </label>
+
+
+      <button
+        id="saveProductButton"
+        class="primary-button full"
+        type="submit"
+      >
+        Зберегти
+      </button>
+
+
+      <div
+        id="productMessage"
+        class="state-message"
+      ></div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<script src="admin.js"></script>
+
+</body>
+</html>
